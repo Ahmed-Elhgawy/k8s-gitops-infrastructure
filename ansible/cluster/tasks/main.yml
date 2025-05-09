@@ -1,0 +1,23 @@
+---
+# tasks file for cluster
+- name: Enable IP forwarding (runtime)
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+- name: Turn off Swap
+  ansible.builtin.command:
+    cmd: sudo swapoff -a
+  args:
+    creates: /etc/kubernetes/cluster.int
+
+- name: Initialize Kubernetes cluster with kubeadm
+  ansible.builtin.command:
+    cmd: kubeadm init
+  args:
+    creates: /etc/kubernetes/admin.conf
+  notify:
+    - Set Kube Configuration Directory
+    - Copy Kube Configuration file
+    - Install a pod network

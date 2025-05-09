@@ -1,0 +1,22 @@
+---
+# handlers file for cluster
+- name: Set Kube Configuration Directory
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.kube/"
+    state: directory
+    recurse: true
+    mode: '0755'
+    owner: "{{ ansible_facts['user_id'] }}"
+    group: "{{ ansible_facts['user_id'] }}"
+- name: Copy Kube Configuration file
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: "{{ ansible_facts['user_dir'] }}/.kube/config"
+    remote_src: true
+    mode: '0644'
+
+- name: Install a pod network
+  ansible.builtin.command:
+    cmd: kubectl apply -f https://reweave.azurewebsites.net/k8s/v1.29/net.yaml
+  args:
+    creates: /etc/kubernetes/weave.net

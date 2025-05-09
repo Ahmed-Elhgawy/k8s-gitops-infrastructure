@@ -1,0 +1,6 @@
+[control-plane]
+192.168.1.100
+
+[control-plane:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=~/.ssh/id_rsa

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-deployment
+  labels:
+    app: nodeja-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nodeja-app
+  template:
+    metadata:
+      labels:
+        app: nodeja-app
+    spec:
+      containers:
+      - name: app
+        image: elhgawy/todo-app:jenkins-todo-app-42
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_HOST
+          value: mongo
+        - name: MONGO_DB
+          value: tasks
+        - name: MONGO_USER
+          valueFrom:
+            secretKeyRef:
+              key: MONGO_USER
+              name: todo-secrets
+        - name: MONGO_PASS
+          valueFrom:
+            secretKeyRef:
+              key: MONGO_PASS
+              name: todo-secrets
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 250m
+          limits:
+            memory: 256Mi
+            cpu: 500m
+        livenessProbe:
+          httpGet:
+            path: /tasks
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: todo-service
+  name: todo-service
+spec:
+  ports:
+  - name: app-port
+    nodePort: 31000
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: nodeja-app
+  type: NodePort

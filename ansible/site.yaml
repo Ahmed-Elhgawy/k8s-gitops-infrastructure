@@ -1,0 +1,32 @@
+---
+- name: Get The Server Ready
+  hosts: all
+  tasks:
+    - name: Install Dependencies
+      ansible.builtin.apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+        update_cache: true
+      when: ansible_facts['pkg_mgr'] == "apt"
+  
+- name: Install Container Runtime
+  hosts: all
+  roles:
+    - role: CRT
+      tags: container-runtime
+
+- name: Install Kubernetes
+  hosts: all
+  roles:
+    - role: kube
+      tags: kube(adm,let,ctl)
+    
+- name: Provision Kubernetes Cluster
+  hosts: all
+  roles:
+    - role: cluster
+      tags: cluster

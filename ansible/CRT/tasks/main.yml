@@ -1,0 +1,41 @@
+---
+# tasks file for CRT
+- name: Download & Unarchive the Containerd file
+  ansible.builtin.unarchive:
+    src: https://github.com/containerd/containerd/releases/download/v2.0.2/containerd-2.0.2-linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: true
+    mode: '0755'
+
+- name: Create Directory for Containerd service
+  ansible.builtin.file:
+    path: /usr/local/lib/systemd/system
+    state: directory
+    mode: '0755'
+    recurse: true 
+- name: Download Containerd service file
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+    dest: /usr/local/lib/systemd/system/containerd.service
+    mode: '0644'
+  notify:
+    - Start Containerd service
+
+- name: Download runc file
+  ansible.builtin.get_url:
+    url: https://github.com/opencontainers/runc/releases/download/v1.2.5/runc.amd64
+    dest: /usr/local/sbin/runc
+    mode: '0755'
+
+- name: Create Directory to CNI plugin
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    state: directory
+    recurse: true
+    mode: '0755'
+- name: Download & Unarchive CNI Plugin file
+  ansible.builtin.unarchive:
+    src: https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
+    dest: /opt/cni/bin
+    remote_src: true
+    mode: '0755'
