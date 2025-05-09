@@ -51,6 +51,7 @@ This project demonstrates a full **GitOps-based Kubernetes deployment pipeline**
 │   ├── mongodb.yaml
 │   ├── sealed-secret.yaml
 │   └── secret.yaml
+├── .gitignore
 └── README.md
 ```
 
