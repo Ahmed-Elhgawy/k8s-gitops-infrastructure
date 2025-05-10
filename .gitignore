@@ -1,1 +1,3 @@
 secret.yaml
+redis-pv.yaml
+pub-cert.pem
